@@ -7,6 +7,7 @@
 //
 
 #import "GBAEmulatorScreen.h"
+#import "GBAEmulatorCore.h"
 
 @implementation GBAEmulatorScreen
 
@@ -21,7 +22,12 @@
 }
 
 - (CGSize)intrinsicContentSize
-{    
+{
+    if ([GBAEmulatorCore sharedCore].rom)
+    {
+        CGSize maxScreenSize = [[GBAEmulatorCore sharedCore] calcViewSize:[UIScreen mainScreen].bounds.size];
+        [[GBAEmulatorCore sharedCore] updateEAGLViewForSize:maxScreenSize screen:[UIScreen mainScreen]];
+    }
     return self.eaglView.bounds.size;
 }
 

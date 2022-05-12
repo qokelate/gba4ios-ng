@@ -27,18 +27,99 @@ NSString *const GBAROMDidSaveDataNotification = @"GBAROMDidSaveDataNotification"
     return sharedCore;
 }
 
+- (CGSize)calcViewSize: (CGSize)maxScreenSize
+{
+//    CGSize maxScreenSize = [UIScreen mainScreen].bounds.size;
+    switch ([GBAEmulatorCore sharedCore].rom.type)
+    {
+        case GBAROMTypeGBA:
+        if (maxScreenSize.height / maxScreenSize.width > 160 / 240) {
+            maxScreenSize.width = maxScreenSize.height * 240 / 160;
+        } else {
+            maxScreenSize.height = maxScreenSize.width * 160 / 240;
+        }
+        break;
+        case GBAROMTypeGBC:
+        if (maxScreenSize.height / maxScreenSize.width > 144 / 160) {
+            maxScreenSize.width = maxScreenSize.height * 160 / 144;
+        } else {
+            maxScreenSize.height = maxScreenSize.width * 144 / 160;
+        }
+        break;
+    }
+    
+    return maxScreenSize;
+}
+
 - (void)updateEAGLViewForSize:(CGSize)size screen:(UIScreen *)screen
 {
+    [self updateEAGLViewForSize:size screen:screen pos:CGPointMake(0, 0)];
+}
+
+- (void)updateEAGLViewForSize:(CGSize)size screen:(UIScreen *)screen pos: (CGPoint)pos
+{
+    using namespace Base;
+    
+    mainWin.rect.x = 0;
+    mainWin.rect.y = 0;
+    
+    if (size.width && size.height)
+    {
+        self.screen = screen;
+        CGFloat scale = [screen scale];
+        
+        CGRect f1 = screen.bounds;
+        if (size.width > f1.size.width)
+        {
+            CGFloat scale1 = size.width/size.height;
+            size.width = f1.size.width*1.0;
+            size.height = size.width/scale1;
+        }
+        
+        mainWin.w = mainWin.rect.x2 = size.width * scale;
+        mainWin.h = mainWin.rect.y2 = size.height * scale;
+    }
+    else size = glView.frame.size;
+    
+    // Controls size of built-in controls. Since we aren't using these, we just set these to a valid number so the assert doesn't crash us.
+    Gfx::viewMMWidth_ = 50;
+    Gfx::viewMMHeight_ = 50;
+    
+    logMsg("set screen MM size %dx%d", Gfx::viewMMWidth_, Gfx::viewMMHeight_);
+    currWin = mainWin;
+    
+    //printf("Pixel size: %dx%d", Gfx::viewPixelWidth(), Gfx::viewPixelHeight());
+    
     if (self.eaglView == nil)
     {
         // Create the OpenGL ES view
-        UIView *view = [[EAGLView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
-        self.eaglView = view;
+        glView = [[EAGLView alloc] initWithFrame:CGRectMake(pos.x, pos.y, size.width, size.height)];
+        
+        self.eaglView = glView;
     }
     else
     {
-        self.eaglView.frame = CGRectMake(0, 0, size.width, size.height);
-        [self.eaglView.superview layoutIfNeeded];
+        glView.frame = CGRectMake(pos.x, pos.y, size.width, size.height);
+        [glView.superview layoutIfNeeded];
+        
+        CGFloat previousScale = self.eaglView.layer.contentsScale;
+        
+        if (previousScale != screen.scale)
+        {
+            self.eaglView.layer.contentsScale = screen.scale;
+            Base::pointScale = screen.scale;
+        }
+        
+        // Update framebuffer for new size (or else graphics are slightly blurred)
+        [Base::glView destroyFramebuffer];
+        [Base::glView createFramebuffer];
+        Gfx::setOutputVideoMode(mainWin);
+        
+        bool fastForwardEnabled = emuView.ffGuiTouch;
+        
+        startGameFromMenu();
+        
+        emuView.ffGuiTouch = fastForwardEnabled;
     }
 }
 

@@ -2212,24 +2212,7 @@ static GBAEmulationViewController *_emulationViewController;
         if (CGRectIsEmpty(screenRect) || self.externalController) {
             // For some fullscreen skins, `screenRect` is .zero and `self.screenContainerView.bounds.size` is also .zero
             if (self.screenContainerView.bounds.size.height == 0) {
-                CGSize maxScreenSize = self.view.bounds.size;
-                switch (self.rom.type)
-                {
-                    case GBAROMTypeGBA:
-                    if (maxScreenSize.height / maxScreenSize.width > 160 / 240) {
-                        maxScreenSize.width = maxScreenSize.height * 240 / 160;
-                    } else {
-                        maxScreenSize.height = maxScreenSize.width * 160 / 240;
-                    }
-                    break;
-                    case GBAROMTypeGBC:
-                    if (maxScreenSize.height / maxScreenSize.width > 144 / 160) {
-                        maxScreenSize.width = maxScreenSize.height * 160 / 144;
-                    } else {
-                        maxScreenSize.height = maxScreenSize.width * 144 / 160;
-                    }
-                    break;
-                }
+                CGSize maxScreenSize = [[GBAEmulatorCore sharedCore] calcViewSize:self.view.bounds.size];
                 [[GBAEmulatorCore sharedCore] updateEAGLViewForSize:maxScreenSize screen:[UIScreen mainScreen]];
             } else {
                 [[GBAEmulatorCore sharedCore] updateEAGLViewForSize:[self screenSizeForContainerSize:self.screenContainerView.bounds.size] screen:[UIScreen mainScreen]];

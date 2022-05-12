@@ -49,6 +49,7 @@ extern NSString *const GBAROMDidSaveDataNotification;
 
 + (instancetype)sharedCore;
 
+- (CGSize)calcViewSize: (CGSize)maxScreenSize;
 - (void)updateEAGLViewForSize:(CGSize)size screen:(UIScreen *)screen;
 - (void)updateEAGLViewForSize:(CGSize)size screen:(UIScreen *)screen pos: (CGPoint)pos;
 

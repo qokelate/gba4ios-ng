@@ -79,25 +79,7 @@
 {
     if (sender.state == UIGestureRecognizerStateBegan) return;
     
-    CGSize maxScreenSize = [UIScreen mainScreen].bounds.size;
-    switch ([GBAEmulatorCore sharedCore].rom.type)
-    {
-        case GBAROMTypeGBA:
-        if (maxScreenSize.height / maxScreenSize.width > 160 / 240) {
-            maxScreenSize.width = maxScreenSize.height * 240 / 160;
-        } else {
-            maxScreenSize.height = maxScreenSize.width * 160 / 240;
-        }
-        break;
-        case GBAROMTypeGBC:
-        if (maxScreenSize.height / maxScreenSize.width > 144 / 160) {
-            maxScreenSize.width = maxScreenSize.height * 160 / 144;
-        } else {
-            maxScreenSize.height = maxScreenSize.width * 144 / 160;
-        }
-        break;
-    }
-    
+    CGSize maxScreenSize = [[GBAEmulatorCore sharedCore] calcViewSize:[UIScreen mainScreen].bounds.size];
     maxScreenSize.width *= sender.scale;
     maxScreenSize.height *= sender.scale;
     [[GBAEmulatorCore sharedCore] updateEAGLViewForSize:maxScreenSize screen:[UIScreen mainScreen]];

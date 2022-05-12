@@ -453,6 +453,30 @@ void writeSaveFileForCurrentROMToDisk();
     [self updateSettings:nil];
 }
 
+- (CGSize)calcViewSize: (CGSize)maxScreenSize
+{
+//    CGSize maxScreenSize = [UIScreen mainScreen].bounds.size;
+    switch ([GBAEmulatorCore sharedCore].rom.type)
+    {
+        case GBAROMTypeGBA:
+        if (maxScreenSize.height / maxScreenSize.width > 160 / 240) {
+            maxScreenSize.width = maxScreenSize.height * 240 / 160;
+        } else {
+            maxScreenSize.height = maxScreenSize.width * 160 / 240;
+        }
+        break;
+        case GBAROMTypeGBC:
+        if (maxScreenSize.height / maxScreenSize.width > 144 / 160) {
+            maxScreenSize.width = maxScreenSize.height * 160 / 144;
+        } else {
+            maxScreenSize.height = maxScreenSize.width * 144 / 160;
+        }
+        break;
+    }
+    
+    return maxScreenSize;
+}
+
 - (void)updateEAGLViewForSize:(CGSize)size screen:(UIScreen *)screen
 {
     [self updateEAGLViewForSize:size screen:screen pos:CGPointMake(0, 0)];
