@@ -104,15 +104,17 @@ NSString *const GBASettingsDropboxStatusChangedNotification = @"GBASettingsDropb
 
 - (void)webserver: (UISwitch *)sender
 {
-    [WebServer sharedInstance].webUploader.delegate = (id<GCDWebUploaderDelegate>)self;
+//    [WebServer sharedInstance].webUploader.delegate = (id<GCDWebUploaderDelegate>)self;
    
-    if (sender.on)
-    {
-        [[WebServer sharedInstance] startUploader];
-        
-        [[[UIAlertView alloc] initWithTitle:@"WebServer Running" message:[[WebServer sharedInstance] serverURL].absoluteString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }
-    else [[WebServer sharedInstance] stopUploader];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        if (sender.on)
+        {
+            [[WebServer sharedInstance] startUploader];
+            
+            [[[UIAlertView alloc] initWithTitle:@"WebServer Running" message:[[WebServer sharedInstance] serverURL].absoluteString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        }
+        else [[WebServer sharedInstance] stopUploader];
+    });
 }
 
 - (void)didReceiveMemoryWarning
