@@ -127,6 +127,9 @@ dispatch_queue_t directoryContentsChangedQueue() {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
 
+    documentsDirectory = [documentsDirectory stringByAppendingString:@"/roms"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:documentsDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
+    
     self.currentDirectory = documentsDirectory;
     self.showFileExtensions = YES;
     self.showFolders = NO;
