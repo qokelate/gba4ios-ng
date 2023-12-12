@@ -277,7 +277,7 @@ void EmuView::runFrame(Gfx::FrameTimeBase frameTime)
 
 	if(unlikely(ffGuiKeyPush || ffGuiTouch))
 	{
-		iterateTimes(4, i)
+		iterateTimes(2, i)
 		{
             if (isGBAROM)
             {

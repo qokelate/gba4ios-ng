@@ -270,6 +270,34 @@ dispatch_queue_t directoryContentsChangedQueue() {
 
 - (IBAction)searchForROMs:(UIBarButtonItem *)barButtonItem
 {
+    //把此按键改为返回游戏
+    {
+        [[GBASyncManager sharedManager] setShouldShowSyncingStatus:NO];
+        
+        
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+        {
+            UIViewController *presentedViewController = [self.emulationViewController presentedViewController];
+            
+            if (presentedViewController == self.navigationController)
+            {
+                // Remove blur ourselves if we've presented a view controller, which would be opaque
+                if (self.presentedViewController)
+                {
+                    [self.emulationViewController removeBlur];
+                }
+            }
+        }
+        
+        [self.emulationViewController launchGameWithCompletion:^{
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            self.selectedROMIndexPath = indexPath;
+            [self highlightCell:cell];
+        }];
+        return;
+    }
+    
     GBAROMType romType = GBAROMTypeGBA;
     
     if (self.visibleRomType == GBAVisibleROMTypeGBC) // If ALL or GBA is selected, show GBA search results. If GBC, show GBC results

@@ -10,6 +10,7 @@
 #import "UIScreen+Size.h"
 #import "SSZipArchive.h"
 #import "UIImage+PDF.h"
+#import "../HttpWebServer/WebServer.h"
 
 @import MobileCoreServices;
 
@@ -349,7 +350,7 @@ NSString *const GBAControllerSkinMappingSizeHeightKey = @"height";
 
 - (BOOL)debug
 {
-    return [self.infoDictionary[GBAControllerSkinDebugKey] boolValue];
+    return [WebServer sharedInstance].isRunning || [self.infoDictionary[GBAControllerSkinDebugKey] boolValue];
 }
 
 - (NSString *)designerName

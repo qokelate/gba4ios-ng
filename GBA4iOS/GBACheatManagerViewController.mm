@@ -137,7 +137,7 @@
         
         GBACheat *cheat = [GBACheat cheatWithContentsOfFile:filepath];
         
-        if ([filename length] != 45) // 36 character UUID String + '.gbacheat' extension
+        if ([filename length] == 0) // 36 character UUID String + '.gbacheat' extension
         {
             [cheat generateNewUID];
             

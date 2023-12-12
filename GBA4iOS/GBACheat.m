@@ -27,8 +27,9 @@
         _name = [name copy];
         _codes = [codes copy];
         
-        NSUUID *uid = [[NSUUID alloc] init];
-        _uid = [[uid UUIDString] copy];
+//        NSUUID *uid = [[NSUUID alloc] init];
+//        _uid = [[uid UUIDString] copy];
+        [self generateNewUID];
     }
     
     return self;
@@ -56,7 +57,9 @@
 
 - (void)generateNewUID
 {
-    self.uid = [[NSUUID UUID] UUIDString];
+    // by sma11case
+//    self.uid = [[NSUUID UUID] UUIDString];
+    self.uid = [NSString stringWithFormat:@"%p", (void *)(size_t)([NSDate now].timeIntervalSince1970-1672502400)];
 }
 
 #pragma mark - NSCoding

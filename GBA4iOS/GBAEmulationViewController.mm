@@ -1039,7 +1039,7 @@ static GBAEmulationViewController *_emulationViewController;
         
         alreadyHandledActionSheetCallback = YES;
         
-        //temp hack
+        // by sma11case
         NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
         if ([title isEqualToString:@"TweakBox"])
         {

@@ -28,6 +28,7 @@ CGFloat GBATextViewInsetDefaultRight = 6;
 //    [text replaceOccurrencesOfString:@"\n" withString:@"" options:0 range:NSMakeRange(0, text.length)];
 //    [text replaceOccurrencesOfString:@"-" withString:@"" options:0 range:NSMakeRange(0, text.length)];
     
+    // by sma11case
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^0-9a-fA-F]+" options:0 error:NULL];
     NSString *modifiedString = [regex stringByReplacingMatchesInString:self options:0 range:NSMakeRange(0, self.length) withTemplate:@""];
     
@@ -54,6 +55,28 @@ CGFloat GBATextViewInsetDefaultRight = 6;
 
 @implementation GBACheatEditorViewController
 
+//强制转屏（这个方法最好放在BaseVController中）
+- (void)setInterfaceOrientation:(UIDeviceOrientation)orientation {
+      if ([[UIDevice currentDevice]   respondsToSelector:@selector(setOrientation:)]) {
+          [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:orientation]
+                                       forKey:@"orientation"];
+        }
+    }
+//必须返回YES
+- (BOOL)shouldAutorotate{
+    return YES;
+}
+
+//旋转方向
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+
+
+
+
+
 + (instancetype)controller
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Emulation" bundle:nil];
@@ -70,6 +93,8 @@ CGFloat GBATextViewInsetDefaultRight = 6;
 {
     [super viewDidLoad];
     
+    [self setInterfaceOrientation:UIDeviceOrientationPortrait];
+    
     self.codeTextView.keyboardType = UIKeyboardTypeASCIICapable;
     
     if (self.romType == GBAROMTypeGBC)
@@ -78,6 +103,8 @@ CGFloat GBATextViewInsetDefaultRight = 6;
         [self.codeTypeSegmentedControl setTitle:NSLocalizedString(@"GameShark", @"") forSegmentAtIndex:0];
         [self.codeTypeSegmentedControl setTitle:NSLocalizedString(@"Game Genie", @"") forSegmentAtIndex:1];
     }
+    
+    self.nameTextField.text = [@(arc4random()) description];
     
     if (self.cheat)
     {
@@ -267,6 +294,21 @@ CGFloat GBATextViewInsetDefaultRight = 6;
     }
     
     cheat.type = [self currentCheatCodeType];
+    
+    //compact vba, by sma11case
+    if (cheat.type == GBACheatCodeTypeCodeBreaker && cheat.codes.count == 10)
+    {
+        NSMutableArray *a = [cheat.codes mutableCopy];
+        [a insertObject:@"0" atIndex:8];
+        [a insertObject:@"0" atIndex:8];
+        if ([a[0] isEqualToString:@"0"]) a[0] = @"3";
+        cheat.codes = a;
+    } else  if (cheat.type == GBACheatCodeTypeCodeBreaker && cheat.codes.count == 12)
+    {
+        NSMutableArray *a = [cheat.codes mutableCopy];
+        if ([a[0] isEqualToString:@"0"]) a[0] = @"8";
+        cheat.codes = a;
+    }
     
     if ([self.delegate respondsToSelector:@selector(cheatEditorViewController:didSaveCheat:)])
     {

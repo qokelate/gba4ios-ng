@@ -107,6 +107,7 @@ NSString *const GBASettingsDropboxStatusChangedNotification = @"GBASettingsDropb
 //    [WebServer sharedInstance].webUploader.delegate = (id<GCDWebUploaderDelegate>)self;
    
     bool on = sender.on;
+    [UIApplication sharedApplication].idleTimerDisabled = on;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         if (on)
         {
